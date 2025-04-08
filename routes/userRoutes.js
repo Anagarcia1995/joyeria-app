@@ -1,13 +1,23 @@
 const express = require('express');
-const { crearProducto, obtenerProductos } = require('../controllers/productController');
-const { actualizarRol } = require('../controllers/userController');
-const { verificarToken, verificarAdmin } = require('../middleware/authMiddleware');
+const { signup, login, obtenerUsuarios,
+        agregarAFavoritos, quitarDeFavoritos,
+        agregarACesta, quitarDeCesta, obtenerFavoritosYCesta
+    } = require('../controllers/userController');
+const verificarToken  = require('../middleware/auth'); 
 const router = express.Router();
 
-// Solo usuarios con token válido pueden acceder
-router.post('/', verificarToken, verificarAdmin, crearProducto); // Solo admin puede crear productos
-router.get('/', obtenerProductos); // Todos los usuarios pueden ver productos
-router.patch('/admin/actualizar-rol/:id', verificarToken, verificarAdmin, actualizarRol);
+router.post('/signup', signup); 
+router.post('/login', login);  
 
+router.post('/favoritos', verificarToken, agregarAFavoritos);
+router.post('/cesta', verificarToken, agregarACesta);
+
+router.get('/', verificarToken, obtenerUsuarios);  
+router.get('/favoritos-cesta', verificarToken, obtenerFavoritosYCesta);
+
+router.delete('/favoritos', verificarToken, quitarDeFavoritos);
+router.delete('/cesta', verificarToken, quitarDeCesta);
+
+console.log('Rutas de usuarios registradas correctamente');
 
 module.exports = router;
